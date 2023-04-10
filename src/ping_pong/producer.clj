@@ -1,6 +1,5 @@
 (ns ping-pong.producer
-  (:require [jackdaw.client :as jc]
-            [overtone.at-at :as at]))
+  (:require [jackdaw.client :as jc]))
 
 (def producer-config
   {"bootstrap.servers" "localhost:9092"
@@ -10,6 +9,8 @@
    "client.id" "foo"})
 
 (def ^:const topic "test")
+
+(def continue? (atom true))
 
 (def users ["Alice" "Bob" "Claire" "Doyce" "Earl"])
 
@@ -24,9 +25,14 @@
     (send-message (str "User: " user ", TS: " current-ts))))
 
 (defn send-messages-constantly
-  [interval pool]
-  (at/every interval create-and-send-message pool))
+  [interval]
+  (reset! continue? true)
+  (loop []
+    (when @continue?
+      (Thread/sleep interval)
+      (create-and-send-message)
+      (recur))))
 
 (defn stop-messages
-  [pool]
-  (at/stop-and-reset-pool! pool :strategy :kill))
+  []
+  (reset! continue? false))
