@@ -16,7 +16,7 @@
 
 (defn send-message [m]
   (with-open [my-producer (jc/producer producer-config)]
-    @(jc/produce! my-producer {:topic-name topic} "1" m)))
+    @(jc/produce! my-producer {:topic-name topic} m)))
 
 (defn create-and-send-message
   []
