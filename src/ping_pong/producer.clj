@@ -1,5 +1,6 @@
 (ns ping-pong.producer
-  (:require [jackdaw.client :as jc]))
+  (:require [jackdaw.client :as jc]
+            [cheshire.core :as cc]))
 
 (def producer-config
   {"bootstrap.servers" "localhost:9092"
@@ -22,7 +23,8 @@
   []
   (let [current-ts (System/currentTimeMillis)
         user (get users (rand-int (count users)))]
-    (send-message (str "User: " user ", TS: " current-ts))))
+    (send-message (cc/generate-string {:user user
+                                       :ts current-ts}))))
 
 (defn send-messages-constantly
   [interval]
