@@ -1,6 +1,7 @@
 (ns ping-pong.core
   (:gen-class)
-  (:require [ping-pong.producer :as producer]))
+  (:require [ping-pong.producer :as producer]
+            [ping-pong.consumer :as consumer]))
 
 
 (defn -main
@@ -8,6 +9,8 @@
   [& args]
   (str "To start sending messages, call `start-sending-messages` fn"))
 
+
+;; Function to kick-start the producer
 (defn start-sending-messages
   [& {:keys [timeout-interval timeout?]
       :or {timeout-interval 10000
@@ -16,3 +19,8 @@
   (when timeout?
     (do (Thread/sleep timeout-interval)
         (producer/stop-messages))))
+
+;; Function to kick-start the consumer
+(defn start-consumer
+  []
+  (future (consumer/start-consuming)))
