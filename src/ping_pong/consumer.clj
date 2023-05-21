@@ -1,7 +1,9 @@
 (ns ping-pong.consumer
   (:require
     [jackdaw.client :as jc]
-    [jackdaw.client.log :as jl])
+    [jackdaw.client.log :as jl]
+    [cheshire.core :as cc]
+    [clojure.walk :as walk])
   (:import
     (org.apache.kafka.common.serialization Serdes)))
 
@@ -20,13 +22,13 @@
   (with-open [my-consumer (-> (jc/consumer consumer-config)
                               (jc/subscribe [topic-foo]))]
     (reset! continue? true)
-    (doseq [{:keys [key value partition timestamp offset]} (jl/log my-consumer 500 (fn [_]
-                                                                                     @continue?))]
-      (println "key: " key)
-      (println "value: " value)
-      (println "partition: " partition)
-      (println "timestamp: " timestamp)
-      (println "offset: " offset))))
+    (doseq [{:keys [value]} (jl/log my-consumer 500 (fn [_]
+                                                      @continue?))]
+      (->> value
+           cc/parse-string
+           walk/keywordize-keys
+           println)
+      (println "---"))))
 
 
 (defn stop-consumer
