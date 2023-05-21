@@ -14,8 +14,6 @@
 
 (def continue? (atom true))
 
-(def users ["Alice" "Bob" "Claire" "Doyce" "Earl"])
-
 (defn send-message [m]
   (with-open [my-producer (jc/producer producer-config)]
     @(jc/produce! my-producer {:topic-name topic} m)))
@@ -23,8 +21,9 @@
 (defn create-and-send-message
   []
   (let [current-ts (System/currentTimeMillis)
-        user (users/get-user)]
-    (send-message (cc/generate-string {:user user
+        {:keys [name email] :as user} (users/get-user)]
+    (send-message (cc/generate-string {:user name
+                                       :email email
                                        :ts current-ts}))))
 
 (defn send-messages-constantly

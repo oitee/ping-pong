@@ -1,7 +1,8 @@
-(ns ping-pong.users)
+(ns ping-pong.users
+  (:require [clojure.string :as cs]))
 
 ;; Taken from: https://github.com/eigenhombre/namejen/blob/master/src/main/clojure/namejen/lists/names.cljc
-(def users
+(def user-names
   ["Aaron" "Adam" "Adlai" "Adrian" "Agatha" "Ahmed" "Ahmet" "Aimee"
    "Amy" "Ami" "Al" "Alain" "Alan" "Alastair" "Albert" "Alberto"
    "Alejandro" "Alex" "Alexander" "Alexis" "Alf" "Alfred" "Alison"
@@ -172,7 +173,26 @@
    "Wes" "Will" "William" "Willie" "Wilmer" "Wilson" "Win" "Winnie"
    "Winston" "Wolf" "Wolfgang" "Woody" "Yvonne"])
 
+(def email-domains
+  ["gmail.com" "hotmail.com" "yahoo.com" "aol.com" "msn.com" "live.com" "rediffmail.com"])
+
+(def users (atom []))
+
+(defn- get-users
+  []
+  (when (empty? @users)
+    (run! (fn [u] (let [email-domain (get email-domains (rand-int (count email-domains)))
+                        email (format "%s@%s"
+                                      (cs/lower-case u)
+                                      email-domain)]
+                    (swap! users conj {:name u
+                                       :email email})))
+          user-names))
+  @users)
+
 
 (defn get-user
   []
-  (get users (rand-int (count users))))
+  (let [users (get-users)
+        user-count (count users)]
+    (get users (rand-int user-count))))
