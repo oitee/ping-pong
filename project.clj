@@ -5,7 +5,8 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [fundingcircle/jackdaw "0.8.0"]
-                 [cheshire "5.11.0"]]
+                 [cheshire "5.11.0"]
+                 [clj-http "3.12.3"]]
   :main ^:skip-aot ping-pong.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
