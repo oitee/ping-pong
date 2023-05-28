@@ -1,13 +1,8 @@
 (ns ping-pong.core
   (:gen-class)
   (:require [ping-pong.producer :as producer]
-            [ping-pong.consumer :as consumer]))
-
-
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (str "To start sending messages, call `start-sending-messages` fn"))
+            [ping-pong.active-users-consumer :as active-users]
+            [ping-pong.messages-consumer :as messages]))
 
 
 ;; Function to kick-start the producer
@@ -17,10 +12,26 @@
            timeout? true}}]
   (future (producer/send-messages-constantly 1000))
   (when timeout?
-    (do (Thread/sleep timeout-interval)
-        (producer/stop-messages))))
+    (Thread/sleep timeout-interval)
+    (producer/stop-messages)))
 
-;; Function to kick-start the consumer
-(defn start-consumer
+
+(defn start-producer-and-consumer
   []
-  (future (consumer/start-consumer)))
+  (future (start-sending-messages :timeout? false))
+  (Thread/sleep 1000)
+  (future (active-users/start-consumer))
+  (future (messages/start-consumer)))
+
+
+(defn stop-producer-and-consumers
+  []
+  (producer/stop-messages)
+  (active-users/stop-consumer)
+  (messages/stop-consumer))
+
+
+(defn -main
+  "Temporary fn to kick-start and stop the consumers and producer"
+  [& args]
+  (start-producer-and-consumer))
