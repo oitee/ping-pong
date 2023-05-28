@@ -1,32 +1,18 @@
 # ping-pong
 
-FIXME: description
+A WIP project that uses kafka to push user messages to a topic. It comprises of two
+consumers: one for keeping state of active users and another to print new
+messages of each users.
+
+Aim of this project is to understand how Kafka works - by play around with it.
+
+This project makes use of the following libraries: [jackdaw](https://github.com/FundingCircle/jackdaw) (Kafka library), [jedis](https://github.com/redis/jedis) (Redis library),[clj-http](https://github.com/dakrone/clj-http) (http-client library)
 
 ## Installation
 
-Download from http://example.com/FIXME.
+WIP
 
-## Usage
 
-FIXME: explanation
-
-    $ java -jar ping-pong-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
 
 ## License
 
