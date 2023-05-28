@@ -6,8 +6,9 @@
    [redis.clients.jedis JedisPooled]))
 
 
-
 (def continue? (atom true))
+
+(def ^:const consumer-config (assoc utils/consumer-config "group.id" "com.test.active-users-consumer"))
 
 (def store "sorted:users")
 
@@ -39,7 +40,7 @@
                        [value]
                        (let [{:keys [ts user email]} (utils/keywordise-payload value)]
                          (add-user user email ts)))]
-    (utils/start-consuming utils/consumer-config
+    (utils/start-consuming consumer-config
                            utils/topic
                            continue-fn
                            consuming-fn)))

@@ -6,7 +6,6 @@
 
 (def consumer-config
   {"bootstrap.servers" "localhost:9092"
-   "group.id"  "com.test.my-consumer"
    "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
    "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"})
 
