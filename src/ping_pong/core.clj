@@ -23,4 +23,4 @@
 ;; Function to kick-start the consumer
 (defn start-consumer
   []
-  (future (consumer/start-consuming)))
+  (future (consumer/start-consumer)))
