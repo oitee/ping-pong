@@ -18,8 +18,9 @@
   (let [continue-fn (fn [_] @continue?)
         consuming-fn (fn
                        [value]
-                       (let [{:keys [user message]} (utils/keywordise-payload value)]
-                         (print-message user message)))]
+                       (let [{:keys [user message activity]} (utils/keywordise-payload value)]
+                         (when (= activity (:send-message utils/allowed-activities))
+                           (print-message user message))))]
     (utils/start-consuming consumer-config
                            utils/topic
                            continue-fn

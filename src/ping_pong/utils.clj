@@ -9,6 +9,10 @@
    "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
    "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"})
 
+(def ^:const allowed-activities
+  {:heart-beat 0
+   :send-message 1})
+
 
 (def topic
   {:topic-name "test"})

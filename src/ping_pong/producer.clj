@@ -3,7 +3,8 @@
             [cheshire.core :as cc]
             [clj-http.client :as http-client]
             [clojure.walk :as walk]
-            [ping-pong.users :as users]))
+            [ping-pong.users :as users]
+            [ping-pong.utils :as utils]))
 
 (def producer-config
   {"bootstrap.servers" "localhost:9092"
@@ -29,28 +30,46 @@
           (get-in [:quote :body]))
       "")))
 
+
 (defn send-message [m]
   (with-open [my-producer (jc/producer producer-config)]
-    @(jc/produce! my-producer {:topic-name topic} m)))
+    @(jc/produce! my-producer utils/topic m)))
 
-(defn create-and-send-message
+
+(defn create-and-send-messages
+  [interval]
+  (while @continue?
+    (let [current-ts (System/currentTimeMillis)
+          {:keys [name email]} (users/get-user)
+          user-message (get-user-message)
+          activity (:send-message utils/allowed-activities)]
+      (send-message (cc/generate-string {:user name
+                                         :email email
+                                         :activity activity
+                                         :message user-message
+                                         :ts current-ts})))
+    (Thread/sleep interval)))
+
+
+(defn send-heartbeats
   []
-  (let [current-ts (System/currentTimeMillis)
-        {:keys [name email] :as user} (users/get-user)
-        user-message (get-user-message)]
-    (send-message (cc/generate-string {:user name
-                                       :email email
-                                       :message user-message
-                                       :ts current-ts}))))
+  (while @continue?
+    (let [current-ts (System/currentTimeMillis)
+          {:keys [name email]} (users/get-user)
+          min-interval 1000
+          rand-interval (+ min-interval (rand-int 7000))
+          activity (:heart-beat utils/allowed-activities)]
+      (send-message (cc/generate-string {:user name
+                                         :email email
+                                         :activity activity
+                                         :ts current-ts}))
+      (Thread/sleep rand-interval))))
 
 (defn send-messages-constantly
   [interval]
   (reset! continue? true)
-  (loop []
-    (when @continue?
-      (Thread/sleep interval)
-      (create-and-send-message)
-      (recur))))
+  (future (send-heartbeats))
+  (future (create-and-send-messages interval)))
 
 (defn stop-messages
   []
