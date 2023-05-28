@@ -9,7 +9,6 @@
 
 (def continue? (atom true))
 
-
 (def store "sorted:users")
 
 (def jedis (JedisPooled. "localhost" 6379))
@@ -28,9 +27,10 @@
   (let [curr-ts (double (System/currentTimeMillis))
         cutoff-ts (double (- curr-ts 30000))
         active-users (.zrangeByScore jedis store cutoff-ts curr-ts)]
+    ;; Remove users who were active before the cutoff time-stamp
+    (.zremrangeByScore jedis store (double 0) (dec cutoff-ts))
     (map #(first (cs/split % #"::")) active-users)))
 
-;; @TOOD: Add fn to delete old keys in redis
 
 (defn start-active-users-consumer
   []
