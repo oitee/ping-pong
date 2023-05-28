@@ -1,24 +1,11 @@
 (ns ping-pong.active-users-consumer
-  (:require [jackdaw.client :as jc]
-            [jackdaw.client.log :as jl]
-            [cheshire.core :as cc]
-            [clojure.string :as cs]
-            [clojure.walk :as walk])
+  (:require [clojure.string :as cs]
+            [ping-pong.utils :as utils])
   (:import
    (org.apache.kafka.common.serialization Serdes)
    [redis.clients.jedis JedisPooled]))
 
 
-;; @TODO: Add to utils: kafka consumer config
-(def consumer-config
-  {"bootstrap.servers" "localhost:9092"
-   "group.id"  "com.test.my-consumer"
-   "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
-   "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"})
-
-;; @TODO: Add to utils: kafka topic
-(def topic-foo
-  {:topic-name "test"})
 
 (def continue? (atom true))
 
@@ -45,24 +32,27 @@
 
 ;; @TOOD: Add fn to delete old keys in redis
 
-
-(defn start-active-users-consumer []
-  (with-open [my-consumer (-> (jc/consumer consumer-config)
-                              (jc/subscribe [topic-foo]))]
-    (reset! continue? true)
-    (doseq [{:keys [value]} (jl/log my-consumer 500 (fn [_]
-                                                      @continue?))]
-      (let [{:keys [ts user email]} (->> value
-                                         cc/parse-string
-                                         walk/keywordize-keys)]
-        (add-user user email ts)))))
-
+(defn start-active-users-consumer
+  []
+  (let [continue-fn (fn [_] @continue?)
+        consuming-fn (fn
+                       [value]
+                       (let [{:keys [ts user email]} (utils/keywordise-payload value)]
+                         (add-user user email ts)))]
+    (utils/start-consuming utils/consumer-config
+                           utils/topic
+                           continue-fn
+                           consuming-fn)))
 
 (defn print-active-users
   []
   (while @continue?
-    (println "\n Active Users:")
-    (run! #(print (str % ", ")) (get-active-users))
+    (let [active-users (get-active-users)]
+      (if (empty? active-users)
+        (println "No Active Users...")
+        (do (println "Active Users:")
+            (run! #(print (str % ", ")) (get-active-users))
+            (println "\n---"))))
     (Thread/sleep 3000))
   (println "----xx---"))
 
