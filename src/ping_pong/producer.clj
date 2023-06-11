@@ -4,7 +4,8 @@
             [clj-http.client :as http-client]
             [clojure.walk :as walk]
             [ping-pong.users :as users]
-            [ping-pong.utils :as utils]))
+            [ping-pong.utils :as utils])
+  (:gen-class))
 
 (def producer-config
   {"bootstrap.servers" "localhost:9092"
@@ -74,3 +75,7 @@
 (defn stop-messages
   []
   (reset! continue? false))
+
+(defn -main
+  []
+  (send-messages-constantly 1000))

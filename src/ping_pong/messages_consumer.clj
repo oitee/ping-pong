@@ -1,5 +1,6 @@
 (ns ping-pong.messages-consumer
-  (:require [ping-pong.utils :as utils]))
+  (:require [ping-pong.utils :as utils])
+  (:gen-class))
 
 (def continue? (atom true))
 
@@ -35,3 +36,8 @@
 (defn stop-consumer
   []
   (reset! continue? false))
+
+
+(defn -main
+  []
+  (start-consumer))

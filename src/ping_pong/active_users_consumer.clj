@@ -3,7 +3,8 @@
             [ping-pong.utils :as utils])
   (:import
    (org.apache.kafka.common.serialization Serdes)
-   [redis.clients.jedis JedisPooled]))
+   [redis.clients.jedis JedisPooled])
+  (:gen-class))
 
 
 (def continue? (atom true))
@@ -29,7 +30,7 @@
         cutoff-ts (double (- curr-ts 30000))
         active-users (.zrangeByScore jedis store cutoff-ts curr-ts)]
     ;; Remove users who were active before the cutoff time-stamp
-    (.zremrangeByScore jedis store (double 0) (dec cutoff-ts))
+    (.zremrangeByScore jedis store Double/NEGATIVE_INFINITY (dec cutoff-ts))
     (map #(first (cs/split % #"::")) active-users)))
 
 
@@ -52,7 +53,7 @@
       (if (empty? active-users)
         (println "No Active Users...")
         (do (println "Active Users:")
-            (run! #(print (str % ", ")) (get-active-users))
+            (run! #(print (str % ", ")) active-users)
             (println "\n---"))))
     (Thread/sleep 3000))
   (println "----xx---"))
@@ -68,3 +69,8 @@
 (defn stop-consumer
   []
   (reset! continue? false))
+
+
+(defn -main
+  []
+  (start-consumer))
