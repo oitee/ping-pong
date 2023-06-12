@@ -24,9 +24,9 @@
                          (when (= activity (:send-message utils/allowed-activities))
                            (print-message user message))))]
     (consumer/start-consuming consumer-config
-                           utils/topic
-                           continue-fn
-                           consuming-fn)))
+                              utils/topic
+                              continue-fn
+                              consuming-fn)))
 
 (defn start-consumer
   []

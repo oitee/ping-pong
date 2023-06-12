@@ -8,7 +8,7 @@
 
 
 (def topic
-  {:topic-name "test"})
+  {:topic-name (System/getenv "KAFKA_TOPIC")})
 
 
 (defn keywordise-payload
@@ -16,6 +16,10 @@
   (->> p
        cc/parse-string
        walk/keywordize-keys))
+
+(def redis-port (Integer/parseInt (System/getenv "REDIS_PORT")))
+
+(def redis-host (System/getenv "REDIS_HOST"))
 
 ;; List of The Office (US) characters.
 ;; Taken from: https://en.wikipedia.org/wiki/List_of_The_Office_(American_TV_series)_characters

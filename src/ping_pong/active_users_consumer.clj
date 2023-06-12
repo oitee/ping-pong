@@ -14,10 +14,7 @@
 
 (def store "sorted:users")
 
-(def jedis (JedisPooled. "localhost" 6379))
-
-(.zadd jedis store (double (System/currentTimeMillis)) "admin:admin@email.com")
-
+(def jedis nil)
 
 (defn add-user
   [username email score]
@@ -54,11 +51,15 @@
       (if (empty? active-users)
         (println "No Active Users...")
         (do (println "Active Users:")
-            (run! #(print (str % ", ")) active-users)
+            (println (clojure.string/join "," active-users))
             (println "\n---"))))
     (Thread/sleep 3000))
   (println "----xx---"))
 
+
+(defn setup-jedis
+  []
+  (alter-var-root #'jedis (constantly (JedisPooled. utils/redis-host utils/redis-port))))
 
 (defn start-consumer
   []
