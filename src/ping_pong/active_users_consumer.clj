@@ -64,7 +64,8 @@
 (defn start-consumer
   []
   (reset! continue? true)
-  (future (start-active-users-consumer))
+  (setup-jedis)
+  (future (doall (start-active-users-consumer)))
   (future (doall (print-active-users))))
 
 
