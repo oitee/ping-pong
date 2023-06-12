@@ -1,11 +1,12 @@
 (ns ping-pong.messages-consumer
-  (:require [ping-pong.utils :as utils])
+  (:require [ping-pong.utils :as utils]
+            [ping-pong.kafka-consumer :as consumer])
   (:gen-class))
 
 (def continue? (atom true))
 
 (def ^:const consumer-config
-  (assoc utils/consumer-config "group.id" "com.test.messages-consumer"))
+  (assoc consumer/consumer-config "group.id" "com.test.messages-consumer"))
 
 
 (defn print-message
@@ -22,7 +23,7 @@
                        (let [{:keys [user message activity]} (utils/keywordise-payload value)]
                          (when (= activity (:send-message utils/allowed-activities))
                            (print-message user message))))]
-    (utils/start-consuming consumer-config
+    (consumer/start-consuming consumer-config
                            utils/topic
                            continue-fn
                            consuming-fn)))

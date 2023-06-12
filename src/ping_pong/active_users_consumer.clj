@@ -1,5 +1,6 @@
 (ns ping-pong.active-users-consumer
   (:require [clojure.string :as cs]
+            [ping-pong.kafka-consumer :as consumer]
             [ping-pong.utils :as utils])
   (:import
    (org.apache.kafka.common.serialization Serdes)
@@ -9,7 +10,7 @@
 
 (def continue? (atom true))
 
-(def ^:const consumer-config (assoc utils/consumer-config "group.id" "com.test.active-users-consumer"))
+(def ^:const consumer-config (assoc consumer/consumer-config "group.id" "com.test.active-users-consumer"))
 
 (def store "sorted:users")
 
@@ -41,10 +42,10 @@
                        [value]
                        (let [{:keys [ts user email]} (utils/keywordise-payload value)]
                          (add-user user email ts)))]
-    (utils/start-consuming consumer-config
-                           utils/topic
-                           continue-fn
-                           consuming-fn)))
+    (consumer/start-consuming consumer-config
+                              utils/topic
+                              continue-fn
+                              consuming-fn)))
 
 (defn print-active-users
   []
