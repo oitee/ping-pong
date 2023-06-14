@@ -63,6 +63,12 @@ The interaction of the above components are demonstrated in the following sequen
 
 ![ping_pong system components](https://otee.dev/assets/images/ping_pong_sequence.png)
 
+## Demo
+
+Before going ahead with further details, here is a demo of the system:
+
+https://github.com/oitee/ping-pong/assets/85887016/1d516507-4458-4477-85af-de430fe3c7b0
+
 ## Generating user-messages
 
 User-messages have to be generated before pushing them to the Kafka producer. To simulate a chat-room:
