@@ -47,7 +47,7 @@ REDIS_PORT=6379 REDIS_HOST=localhost KAFKA_TOPIC=ping_pong lein run -m ping-pong
 - Start the active-users consumer:
 
 ```bash
-REDIS_PORT=6379 REDIS_HOST=localhost KAKFA_TOPIC=ping_pong lein run -m ping-pong.active-users-consumer
+REDIS_PORT=6379 REDIS_HOST=localhost KAFKA_TOPIC=ping_pong lein run -m ping-pong.active-users-consumer
 ```
 
 ## System Components
