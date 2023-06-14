@@ -1,7 +1,7 @@
 # ping-pong
 
-- This project aims at creating a demo of a live chat-room session, where multiple users from multiple clients send messages to a common end-point and where each new message processed and rendered in the chatroom accordingly.
-- This project makes use of Kafka messaging system to push and process messages asynchronously.
+- This project aims at simulating how messages in a live chatroom (with multiple concurrent users) may get processed, using a Kafka messaging system. 
+- This project makes use of a Kafka producer to push user messages to a topic and uses two independent Kafka consumers to process them.
 
 ## Running the system
 
@@ -20,7 +20,7 @@ sudo docker-compose logs broker | grep -i started
 sudo docker exec broker kafka-topics --bootstrap-server broker:9092 --create --topic ping_pong
 ```
 
-- [_Optional_] Start console consumer:
+- _[Optional]_ Start console consumer:
 
 ```bash
 sudo docker exec --interactive --tty broker kafka-console-consumer --bootstrap-server broker:9092 --topic ping_pong --from-beginning
